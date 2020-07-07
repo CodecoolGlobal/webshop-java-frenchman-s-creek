@@ -39,4 +39,12 @@ public class Order {
         }
         return sum;
     }
+
+    public int getItemsNr() {
+        int sum = 0;
+        for (LineItem element : lineItemList) {
+            sum += element.getQuantity();
+        }
+        return sum;
+    }
 }
