@@ -31,14 +31,14 @@
     <main class="page payment-page">
         <section class="clean-block payment-form dark" th:switch="${orderProducts.size()}">
 
-            <!-- <div class="container" th:case="*">
+            <div class="container" th:case="0">
                 <div class="block-heading">
                     <h2 class="text-info">You don't have any products to pay for yet!</h2>
                     <p><button class="btn btn-primary" type="button"><a href="index.html" style="color: white">Find Products</a></button></p>
                 </div>
-            </div> -->
+            </div>
 
-            <div class="container" th:case="0">
+            <div class="container" th:case="*">
                 <div class="block-heading">
                     <h2 class="text-info">Payment</h2>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quam urna, dignissim nec auctor in, mattis vitae leo.</p>
@@ -46,15 +46,15 @@
                 <form method="POST">
                     <div class="products">
                         <h3 class="title">Checkout</h3>
-                        <div th:each="product: ${orderProducts}">
+                        <div th:each="lineItem: ${orderProducts}">
                             <div class="item">
-                                <span class="price" th:text="${product.getPrice()}"></span>
-                                <p class="item-name" th:text="${product.getName()}"></p>
-                                <p class="item-description"th:text="${product.getSupplier()}"></p>
+                                <span class="price" th:text="${lineItem.getProduct().getPrice()}"></span>
+                                <p class="item-name" th:text="${lineItem.getProduct().getName()}"></p>
+                                <p class="item-description"th:text="${lineItem.getProduct().getDescription()}"></p>
                             </div>
                         </div>
                         
-                        <div class="total"><span>Total</span><span class="price" th:text="${order.total}"></span></div>
+                        <div class="total"><span>Total</span><span class="price" th:text="${order.total}USD"></span></div>
                     </div>
                 
                     <div class="card-details">
@@ -81,13 +81,6 @@
                         </div>
                     </div>
                 </form>
-            </div>
-
-            <div class="container" th:case="*">
-                <div class="block-heading">
-                    <h2 class="text-info">You don't have any products to pay for yet!</h2>
-                    <p><button class="btn btn-primary" type="button"><a href="index.html" style="color: white">Find Products</a></button></p>
-                </div>
             </div>
         </section>
     </main>
