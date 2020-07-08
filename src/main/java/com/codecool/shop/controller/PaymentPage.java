@@ -5,6 +5,8 @@ import com.codecool.shop.dao.implementation.OrderDaoMem;
 import com.codecool.shop.payment.CreditCard;
 import com.codecool.shop.payment.StripePayment;
 import com.codecool.shop.config.TemplateEngineUtil;
+import com.codecool.shop.customer_orders.OrderToJSON;
+
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
@@ -21,10 +23,11 @@ public class PaymentPage extends HttpServlet {
     private static final long serialVersionUID = 1L;
     TemplateEngine engine;
     WebContext context;
+    OrderDao orderDataStore;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        OrderDao orderDataStore = OrderDaoMem.getInstance();
+        orderDataStore = OrderDaoMem.getInstance();
         engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         context = new WebContext(req, resp, req.getServletContext());
         context.setVariable("orderProducts", orderDataStore.find(1).getLineItems());
@@ -46,6 +49,8 @@ public class PaymentPage extends HttpServlet {
 
         if (success) {
             resp.sendRedirect("order-confirmation");
+            OrderToJSON orderToJSON = new OrderToJSON(orderDataStore.find(1));
+            orderToJSON.convertOrderToJSON();
         } else {
             context.setVariable("payment-error", true);
             engine.process("product/payment-page.html", context, resp.getWriter());
