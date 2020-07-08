@@ -42,12 +42,21 @@
                     <!-- a page load so disabled. -->
                     <!-- <reload>automatic</reload> -->
                     <!-- <scanIntervalSeconds>1</scanIntervalSeconds> -->
+                    <httpConnector>
+                        <!--host>localhost</host-->
+                        <port>8888</port>
+                    </httpConnector>
                 </configuration>
             </plugin>
         </plugins>
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.7.25</version>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
