@@ -191,6 +191,14 @@
                                                 <h3 th:text="${prod.getPrice()}">100 USD</h3>
                                             </div>
                                         </div>
+                                        <div class="about">
+                                            <form method="post" action="/">
+                                                <input type="hidden" name="productId" th:value="${prod.getId()}">
+                                                <button type="submit" class="btn btn-success">
+                                                    Add to cart
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
