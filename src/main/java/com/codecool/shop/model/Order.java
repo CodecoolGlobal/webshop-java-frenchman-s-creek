@@ -15,6 +15,10 @@ public class Order {
         this.id = id;
     }
 
+    public List<LineItem> getLineItemList() {
+        return lineItemList;
+    }
+
     public void add(Product product) {
         boolean isInCart = false;
         for (LineItem element : lineItemList) {

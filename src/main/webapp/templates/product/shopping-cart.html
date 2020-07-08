@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="utf-8">
@@ -41,52 +41,33 @@
                     <div class="row no-gutters">
                         <div class="col-md-12 col-lg-8">
                             <div class="items">
-                                <div class="product">
+                                <div class="product" th:each="element : ${order.getLineItemList()}">
                                     <div class="row justify-content-center align-items-center">
                                         <div class="col-md-3">
-                                            <div class="product-image"><img class="img-fluid d-block mx-auto image" src="/static/assets/img/tech/image2.jpg"></div>
+                                            <div class="product-image"><img class="img-fluid d-block mx-auto image"
+                                                                            src="http://placehold.it/400x250/000/fff"
+                                                                            th:attr="src='/static/img/product_' + ${element.getProduct().getId()} + '.jpg'" alt=""></div>
                                         </div>
-                                        <div class="col-md-5 product-info"><a class="product-name" href="#">Lorem Ipsum dolor</a>
+                                        <div class="col-md-5 product-info"><a class="product-name" href="#"
+                                                                              th:href="'/product-page.html?productId='+${element.getProduct().getId()}" th:text="${element.getProduct().getName()}">Product Name</a>
                                             <div class="product-specs">
+                                                <div><span th:text="${element.getProduct().getDescription()}">Product
+                                                    Description
+                                                </span></div>
+                                                <!--
                                                 <div><span>Display:&nbsp;</span><span class="value">5 inch</span></div>
                                                 <div><span>RAM:&nbsp;</span><span class="value">4GB</span></div>
                                                 <div><span>Memory:&nbsp;</span><span class="value">32GB</span></div>
+                                                -->
                                             </div>
                                         </div>
-                                        <div class="col-6 col-md-2 quantity"><label class="d-none d-md-block" for="quantity">Quantity</label><input type="number" id="number" class="form-control quantity-input" value="1"></div>
-                                        <div class="col-6 col-md-2 price"><span>$120</span></div>
-                                    </div>
-                                </div>
-                                <div class="product">
-                                    <div class="row justify-content-center align-items-center">
-                                        <div class="col-md-3">
-                                            <div class="product-image"><img class="img-fluid d-block mx-auto image" src="/static/assets/img/tech/image2.jpg"></div>
-                                        </div>
-                                        <div class="col-md-5 product-info"><a class="product-name" href="#">Lorem Ipsum dolor</a>
-                                            <div class="product-specs">
-                                                <div><span>Display:&nbsp;</span><span class="value">5 inch</span></div>
-                                                <div><span>RAM:&nbsp;</span><span class="value">4GB</span></div>
-                                                <div><span>Memory:&nbsp;</span><span class="value">32GB</span></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-md-2 quantity"><label class="d-none d-md-block" for="quantity">Quantity</label><input type="number" id="number" class="form-control quantity-input" value="1"></div>
-                                        <div class="col-6 col-md-2 price"><span>$120</span></div>
-                                    </div>
-                                </div>
-                                <div class="product">
-                                    <div class="row justify-content-center align-items-center">
-                                        <div class="col-md-3">
-                                            <div class="product-image"><img class="img-fluid d-block mx-auto image" src="/static/assets/img/tech/image2.jpg"></div>
-                                        </div>
-                                        <div class="col-md-5 product-info"><a class="product-name" href="#">Lorem Ipsum dolor</a>
-                                            <div class="product-specs">
-                                                <div><span>Display:&nbsp;</span><span class="value">5 inch</span></div>
-                                                <div><span>RAM:&nbsp;</span><span class="value">4GB</span></div>
-                                                <div><span>Memory:&nbsp;</span><span class="value">32GB</span></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 col-md-2 quantity"><label class="d-none d-md-block" for="quantity">Quantity</label><input type="number" id="number" class="form-control quantity-input" value="1"></div>
-                                        <div class="col-6 col-md-2 price"><span>$120</span></div>
+                                        <div class="col-6 col-md-2 quantity"><label class="d-none d-md-block"
+                                                                                    for="quantity">Quantity
+                                        </label><input type="number" id="quantity"
+                                                       class="form-control quantity-input" value="1"
+                                                       th:value="${element.getQuantity()}"></div>
+                                        <div class="col-6 col-md-2 price"><span
+                                                th:text="${element.getProduct().getPrice()} + ' / ' + ${element.getSubtotal()} + ' ' + ${element.getProduct().getDefaultCurrency()}">120 USD / 120 USD</span></div>
                                     </div>
                                 </div>
                             </div>
@@ -94,10 +75,15 @@
                         <div class="col-md-12 col-lg-4">
                             <div class="summary">
                                 <h3>Summary</h3>
-                                <h4><span class="text">Subtotal</span><span class="price">$360</span></h4>
+                                <h4><span class="text">Subtotal</span><span class="price"
+                                                                            th:text="${order.total()} + ' USD'">360
+                                    USD</span></h4>
                                 <h4><span class="text">Discount</span><span class="price">$0</span></h4>
                                 <h4><span class="text">Shipping</span><span class="price">$0</span></h4>
-                                <h4><span class="text">Total</span><span class="price">$360</span></h4><button class="btn btn-primary btn-block btn-lg" type="button">Checkout</button></div>
+                                <h4><span class="text">Total</span><span class="price"
+                                                                         th:text="${order.total()} + ' USD'">360
+                                    USD</span></h4><button
+                                    class="btn btn-primary btn-block btn-lg" type="button">Checkout</button></div>
                         </div>
                     </div>
                 </div>
