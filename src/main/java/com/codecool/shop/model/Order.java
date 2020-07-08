@@ -47,4 +47,8 @@ public class Order {
         }
         return sum;
     }
+
+    public List<LineItem> getLineItems() {
+        return lineItemList;
+    }
 }
