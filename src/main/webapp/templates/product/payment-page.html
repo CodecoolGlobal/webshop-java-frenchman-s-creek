@@ -40,8 +40,8 @@
 
             <div class="container" th:case="*">
                 <div class="block-heading">
-                    <h2 class="text-info">Payment</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quam urna, dignissim nec auctor in, mattis vitae leo.</p>
+                    <h2 class="text-info">Payment Method</h2>
+                    <p>Choose how you want to pay: Credit Card or PayPal</p>
                 </div>
                 <form method="POST">
                     <div class="products">
@@ -54,11 +54,11 @@
                             </div>
                         </div>
                         
-                        <div class="total"><span>Total</span><span class="price" th:text="${order.total}"></span></div>
+                        <div class="total"><span>Total</span><span class="price" th:text="${order.total + ' USD'}"></span></div>
                     </div>
                 
                     <div class="card-details">
-                        <p style="color: red;" th:text="${payment-error} ? 'Payment failed. Please try again later!' : ''"></p>
+                        <p style="color: red;" th:if="${paymentError}">Payment failed! Please try again!</p>
                         <h3 class="title">Credit Card Details</h3>
                         <div class="form-row">
                             <div class="col-sm-7">
