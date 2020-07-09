@@ -9,6 +9,9 @@ import com.codecool.shop.dao.implementation.ProductDaoMem;
 import com.codecool.shop.config.TemplateEngineUtil;
 import com.codecool.shop.model.Order;
 import com.codecool.shop.model.Product;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
@@ -20,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @WebServlet(urlPatterns = {"/shopping-cart.html"})
 public class ShoppingCart extends HttpServlet {
@@ -55,10 +59,20 @@ public class ShoppingCart extends HttpServlet {
         //get first order
         Order order = orderDataStore.find(1);
 
-        String prodIdString = req.getParameter("prodId");
+        String temp = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
+        JSONParser parser = new JSONParser();
+        JSONObject json = null;
+        try {
+            json = (JSONObject) parser.parse(temp);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        assert json != null;
+
+        String prodIdString = (String) json.get("prodId");
         Product product = productDataStore.find(Integer.parseInt(prodIdString));
 
-        String prodQuantityString = req.getParameter("prodQuantity");
+        String prodQuantityString = (String) json.get("quantity");
         int quantity = Integer.parseInt(prodQuantityString);
         order.remove(product);
         for (int i = 1; i <= quantity; i++) {

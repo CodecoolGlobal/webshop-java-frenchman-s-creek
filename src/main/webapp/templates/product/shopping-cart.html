@@ -63,13 +63,10 @@
                                         </div>
                                         <div class="col-6 col-md-2 quantity">
                                             <label class="d-none d-md-block" for="quantity">Quantity</label>
-                                            <form method="post" action="shopping-cart.html">
-                                                <input type="hidden" name="prodId" th:value="${element.getProduct().getId()}">
-                                                <input type="number" id="quantity" name="prodQuantity"
-                                                       class="form-control quantity-input" value="1"
-                                                       th:value="${element.getQuantity()}">
-                                                <button type="submit" class="btn btn-success">Select</button>
-                                            </form>
+                                            <input type="number" id="quantity" name="prodQuantity"
+                                                   class="form-control quantity-input" value="1"
+                                                   th:attr="data-prod-id=${element.getProduct().getId()}"
+                                                   th:value="${element.getQuantity()}">
                                             </div>
                                         <div class="col-6 col-md-2 price"><span
                                                 th:text="${element.getProduct().getPrice()} + ' / ' + ${element.getSubtotal()} + ' ' + ${element.getProduct().getDefaultCurrency()}">120 USD / 120 USD</span></div>
