@@ -55,32 +55,7 @@ public class ProductController extends HttpServlet {
         engine.process("product/index.html", context, resp.getWriter());
     }
 
-    // protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-    //     ProductDao productDataStore = ProductDaoMem.getInstance();
-    //     ProductCategoryDao productCategoryDataStore = ProductCategoryDaoMem.getInstance();  
-    //     SupplierDao supplierDataStore = SupplierDaoMem.getInstance();
-
-    //     TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
-    //     WebContext context = new WebContext(req, resp, req.getServletContext());
-    //     context.setVariable("category", productCategoryDataStore.getAll());
-
-    //     context.setVariable("suppliers", supplierDataStore.getAll());
-        
-        
-    //     String categoryType = req.getParameter("sort_category");
-    //     ProductCategory cat = productCategoryDataStore.findByName(categoryType);
-    //     String supplierType = req.getParameter("sort_supplier");
-    //     Supplier sup = supplierDataStore.findByName(supplierType);
-    //     if(categoryType.equals("Tablet")){
-    //         context.setVariable("products", productDataStore.getBy(cat));
-    //     }
-    //     if(supplierType.equals("Amazon") || supplierType.equals("Lenovo")){
-    //         context.setVariable("products", productDataStore.getBy(sup));
-    //     }
-        
-            
-    //     engine.process("product/index.html", context, resp.getWriter());
+  
     
 
     @Override
