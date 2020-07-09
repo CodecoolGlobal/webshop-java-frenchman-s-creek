@@ -62,18 +62,18 @@
                         <h3 class="title">Credit Card Details</h3>
                         <div class="form-row">
                             <div class="col-sm-7">
-                                <div class="form-group"><label for="card-holder">Card Holder</label><input class="form-control" type="text" placeholder="Card Holder" name="card-holder"></div>
+                                <div class="form-group"><label for="card-holder">Card Holder</label><input class="form-control" type="text" placeholder="Card Holder" name="card-holder" required></div>
                             </div>
                             <div class="col-sm-5">
                                 <div class="form-group"><label>Expiration date</label>
-                                    <div class="input-group expiration-date"><input class="form-control" type="text" placeholder="MM" name="exp-month"><input class="form-control" type="text" placeholder="YY" name="exp-year"></div>
+                                    <div class="input-group expiration-date"><input class="form-control" type="number" placeholder="MM" name="exp-month" required min="1" max="12"><input class="form-control" type="number" placeholder="YY" name="exp-year" required min="2020"></div>
                                 </div>
                             </div>
                             <div class="col-sm-8">
-                                <div class="form-group"><label for="card-number">Card Number</label><input class="form-control" type="text" id="card-number" placeholder="Card Number" name="card-number"></div>
+                                <div class="form-group"><label for="card-number">Card Number</label><input class="form-control" type="text" id="card-number" placeholder="Card Number" name="card-number" required minlength="16" maxlength="16"></div>
                             </div>
                             <div class="col-sm-4">
-                                <div class="form-group"><label for="cvc">CVC</label><input class="form-control" type="text" id="cvc" placeholder="CVC" name="cvc"></div>
+                                <div class="form-group"><label for="cvc">CVC</label><input class="form-control" type="text" id="cvc" placeholder="CVC" name="cvc" required minlength="3" maxlength="3"></div>
                             </div>
                             <div class="col-sm-12">
                                 <div class="form-group"><button class="btn btn-primary btn-block" type="submit">Proceed</button></div>

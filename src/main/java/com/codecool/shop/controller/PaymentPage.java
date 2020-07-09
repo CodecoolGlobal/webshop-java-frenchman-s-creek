@@ -51,7 +51,7 @@ public class PaymentPage extends HttpServlet {
         if (success) {
             resp.sendRedirect("order-confirmation");
             OrderToJSON.convert(orderDataStore.find(1));
-            (new Mailer("pythonsendmailtest75@gmail.com", "lpiiamlxlfsnzwxs", "bogdan.gheboianu.2013@gmail.com", "TEST", "This is my test message!")).start();
+            (new Mailer("pythonsendmailtest75@gmail.com", "lpiiamlxlfsnzwxs", "bogdan.gheboianu.2013@gmail.com", "[CodeCoolShop] Order Confirmation", "This is my test message!")).start();
         } else {
             context.setVariable("payment-error", true);
             engine.process("product/payment-page.html", context, resp.getWriter());
