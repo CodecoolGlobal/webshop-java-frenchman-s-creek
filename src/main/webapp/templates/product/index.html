@@ -36,7 +36,27 @@
 
 <div class="container">
     <div class="card">
-        <strong th:text="${category.name}">Category Title</strong>
+        <form action="/" method="POST">
+        <label>
+            <select name="sort_category">
+                <option value="choose_category">Choose category</option>
+                <option th:each="cat,iterStat : ${category}" th:text="${cat.name}">cat</option>
+            </select>
+        </label>
+            <label>
+                <select name="sort_supplier">
+                    <option value="choose_supplier">Choose supplier</option>
+                    <option  th:each="supp,iterStat : ${suppliers}" th:text="${supp.name}">supp</option>
+                </select>
+            </label>
+            <button type="submit">Filter  <i class="fa fa-filter" aria-hidden="true"></i></button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <strong th:each="cat,iterStat : ${category}" th:text="${cat.name}">Category Title</strong>
     </div>
 
     <div id="products" class="row">
