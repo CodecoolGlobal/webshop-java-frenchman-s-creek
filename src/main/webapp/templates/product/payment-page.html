@@ -49,7 +49,7 @@
                         <div th:each="lineItem: ${orderProducts}">
                             <div class="item">
                                 <span class="price" th:text="${lineItem.getProduct().getPrice()}"></span>
-                                <p class="item-name" th:text="${lineItem.getProduct().getName()}"></p>
+                                <p class="item-name" th:text="${lineItem.getProduct().getName() + ' x' + lineItem.getQuantity()}"></p>
                                 <p class="item-description"th:text="${lineItem.getProduct().getDescription()}"></p>
                             </div>
                         </div>
