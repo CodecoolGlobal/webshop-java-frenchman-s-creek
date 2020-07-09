@@ -2,6 +2,7 @@ package com.codecool.shop.controller;
 
 import com.codecool.shop.dao.OrderDao;
 import com.codecool.shop.dao.implementation.OrderDaoMem;
+import com.codecool.shop.email.Mailer;
 import com.codecool.shop.payment.CreditCard;
 import com.codecool.shop.payment.StripePayment;
 import com.codecool.shop.config.TemplateEngineUtil;
@@ -49,8 +50,8 @@ public class PaymentPage extends HttpServlet {
 
         if (success) {
             resp.sendRedirect("order-confirmation");
-            OrderToJSON orderToJSON = new OrderToJSON(orderDataStore.find(1));
-            orderToJSON.convertOrderToJSON();
+            OrderToJSON.convert(orderDataStore.find(1));
+            (new Mailer("pythonsendmailtest75@gmail.com", "lpiiamlxlfsnzwxs", "bogdan.gheboianu.2013@gmail.com", "TEST", "This is my test message!")).start();
         } else {
             context.setVariable("payment-error", true);
             engine.process("product/payment-page.html", context, resp.getWriter());

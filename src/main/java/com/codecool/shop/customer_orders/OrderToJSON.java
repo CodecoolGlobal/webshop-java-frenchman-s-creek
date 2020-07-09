@@ -14,23 +14,18 @@ import com.codecool.shop.model.Order;
 import org.json.simple.JSONObject;
 
 public class OrderToJSON {
-    private final Order order;
 
-    public OrderToJSON(Order order) {
-        this.order = order;
-    }
-
-    public void convertOrderToJSON() {
+    public static void convert(Order order) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", this.order.getId());
-        jsonObject.put("total", this.order.total());
+        jsonObject.put("id", order.getId());
+        jsonObject.put("total", order.total());
         List<HashMap<String, String>> products = new ArrayList<>();
-        for (LineItem item : this.order.getLineItemList()) {
+        for (LineItem item : order.getLineItemList()) {
             HashMap<String, String> product = new HashMap<String, String>();
             product.put("id", String.valueOf(item.getProduct().getId()));
             product.put("name", item.getProduct().getName());
             product.put("supplier", item.getProduct().getSupplier().getName());
-            product.put("quantity", String.valueOf(this.order.getLineItemList().stream().filter(i -> i.getProduct().getId() == item.getProduct().getId()).findFirst().get().getQuantity()));
+            product.put("quantity", String.valueOf(order.getLineItemList().stream().filter(i -> i.getProduct().getId() == item.getProduct().getId()).findFirst().get().getQuantity()));
             products.add(product);
         }
         jsonObject.put("products", products);
@@ -38,7 +33,7 @@ public class OrderToJSON {
         try {
             Path currentRelativePath = Paths.get("");
             String s = currentRelativePath.toAbsolutePath().toString() + "\\src\\main\\java\\com\\codecool\\shop\\customer_orders\\";
-            FileWriter file = new FileWriter(s + "order-" + this.order.getId() + ".json");
+            FileWriter file = new FileWriter(s + "order-" + order.getId() + ".json");
             file.write(jsonObject.toJSONString());
             file.close();
         } catch (IOException e) {
