@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@WebServlet(urlPatterns = {"/shopping-cart.html"})
+@WebServlet(urlPatterns = {"/shopping-cart"})
 public class ShoppingCart extends HttpServlet {
 
     @Override

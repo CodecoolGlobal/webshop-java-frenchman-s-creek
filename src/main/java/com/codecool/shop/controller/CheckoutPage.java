@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet(urlPatterns = {"/checkout.html"})
+@WebServlet(urlPatterns = {"/checkout"})
 public class CheckoutPage extends HttpServlet {
 
     @Override

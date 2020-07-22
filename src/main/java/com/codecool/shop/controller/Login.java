@@ -18,7 +18,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet(urlPatterns = {"/login.html"})
+@WebServlet(urlPatterns = {"/login"})
 public class Login extends HttpServlet {
 
     @Override

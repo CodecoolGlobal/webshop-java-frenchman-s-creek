@@ -46,13 +46,13 @@
              id="navcol-1">
             <ul class="nav navbar-nav ml-auto">
                 <li class="nav-item" role="presentation"><a class="nav-link active" href="/">Catalog</a></li>
-                <li class="nav-item" role="presentation"><a class="nav-link" href="product-page.html">Product</a></li>
-                <li class="nav-item" role="presentation"><a class="nav-link" href="payment-page.html">Payment</a></li>
-                <li class="nav-item" role="presentation"><a class="nav-link" href="shopping-cart.html"
+                <li class="nav-item" role="presentation"><a class="nav-link" href="/product">Product</a></li>
+                <li class="nav-item" role="presentation"><a class="nav-link" href="/payment">Payment</a></li>
+                <li class="nav-item" role="presentation"><a class="nav-link" href="/shopping-cart"
                                                             th:text="'Shopping Cart ('+${orderProductCount}+')'">Shopping
                     Cart (0)</a></li>
-                <li class=" nav-item" role="presentation"><a class="nav-link" href="login.html">Login</a></li>
-                <li class="nav-item" role="presentation"><a class="nav-link" href="registration.html">Register</a></li>
+                <li class=" nav-item" role="presentation"><a class="nav-link" href="/login">Login</a></li>
+                <li class="nav-item" role="presentation"><a class="nav-link" href="/register">Register</a></li>
             </ul>
         </div>
     </div>
@@ -192,7 +192,7 @@
                                 <div class="col-12 col-md-6 col-lg-4" th:each="prod,iterStat : ${products}">
                                     <div class="clean-product-item">
                                         <div class="image"><a href="#"
-                                                              th:href="'/product-page.html?productId='+${prod.id}">
+                                                              th:href="'/product?productId='+${prod.id}">
                                             <img class="img-fluid d-block mx-auto"
                                                  src="http://placehold.it/400x250/000/fff"
                                                  th:attr="src='/static/img/' + ${prod.getImageFileName()}" alt=""></a>

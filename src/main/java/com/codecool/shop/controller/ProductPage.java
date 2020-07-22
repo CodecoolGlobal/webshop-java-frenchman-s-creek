@@ -18,7 +18,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet(urlPatterns = {"/product-page.html"})
+@WebServlet(urlPatterns = {"/product"})
 public class ProductPage extends HttpServlet {
 
     @Override

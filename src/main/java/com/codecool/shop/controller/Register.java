@@ -18,7 +18,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-@WebServlet(urlPatterns = {"/registration.html"})
+@WebServlet(urlPatterns = {"/register"})
 public class Register extends HttpServlet {
 
     @Override
