@@ -144,7 +144,6 @@ public class ProductDaoJDBC implements ProductDao {
             product.setId(resultSet.getInt("prod_id"));
             data.add(product);
         }
-        System.out.println(data);
         return data;
     }
 
