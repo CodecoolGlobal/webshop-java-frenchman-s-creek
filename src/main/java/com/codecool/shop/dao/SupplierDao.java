@@ -2,14 +2,15 @@ package com.codecool.shop.dao;
 
 import com.codecool.shop.model.Supplier;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface SupplierDao {
 
-    void add(Supplier supplier);
-    Supplier find(int id);
-    Supplier findByName(String text);
-    void remove(int id);
+    void add(Supplier supplier) throws SQLException;
+    Supplier find(int id) throws SQLException;
+    Supplier findByName(String text) throws SQLException;
+    void remove(int id) throws SQLException;
 
-    List<Supplier> getAll();
+    List<Supplier> getAll() throws SQLException;
 }
