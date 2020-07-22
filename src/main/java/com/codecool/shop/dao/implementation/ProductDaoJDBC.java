@@ -140,6 +140,7 @@ public class ProductDaoJDBC implements ProductDao {
             product.setId(resultSet.getInt("p.id"));
             data.add(product);
         }
+        System.out.println(data);
         return data;
     }
 
