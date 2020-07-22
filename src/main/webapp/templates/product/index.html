@@ -194,7 +194,8 @@
                                         <div class="image"><a href="#"
                                                               th:href="'/product-page.html?productId='+${prod.id}">
                                             <img class="img-fluid d-block mx-auto"
-                                                 src="http://placehold.it/400x250/000/fff" th:attr="src='/static/img/product_' + ${prod.id} + '.jpg'" alt=""></a>
+                                                 src="http://placehold.it/400x250/000/fff"
+                                                 th:attr="src='/static/img/' + ${prod.getImageFileName()}" alt=""></a>
                                         </div>
                                         <div class="product-name"><a href="#" th:text="${prod.name}">Product name</a></div>
                                         <div class="about"><p class="card-text" th:text="${prod.description}">Product description... </p></div>
