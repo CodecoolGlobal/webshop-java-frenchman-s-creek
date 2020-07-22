@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ProductDaoJDBC implements ProductDao {
 
-    private dbConnection connection = dbConnection.getInstance();
+    private final dbConnection connection = dbConnection.getInstance();
     private static ProductDaoJDBC instance = null;
 
     private ProductDaoJDBC() throws IOException {
@@ -30,7 +30,7 @@ public class ProductDaoJDBC implements ProductDao {
 
     @Override
     public void add(Product product) throws SQLException {
-        Connection conn = connection.getConnection();
+        Connection conn = dbConnection.getConnection();
         assert conn != null;
 
         PreparedStatement stmt = conn.prepareStatement(
@@ -50,7 +50,7 @@ public class ProductDaoJDBC implements ProductDao {
 
     @Override
     public Product find(int id) throws SQLException {
-        Connection conn = connection.getConnection();
+        Connection conn = dbConnection.getConnection();
         assert conn != null;
 
         PreparedStatement stmt = conn.prepareStatement(
@@ -93,7 +93,7 @@ public class ProductDaoJDBC implements ProductDao {
 
     @Override
     public void remove(int id) throws SQLException {
-        Connection conn = connection.getConnection();
+        Connection conn = dbConnection.getConnection();
         assert conn != null;
 
         PreparedStatement stmt = conn.prepareStatement(
@@ -149,7 +149,7 @@ public class ProductDaoJDBC implements ProductDao {
 
     @Override
     public List<Product> getBy(Supplier supplier) throws SQLException {
-        Connection conn = connection.getConnection();
+        Connection conn = dbConnection.getConnection();
         assert conn != null;
 
         PreparedStatement stmt = conn.prepareStatement(
@@ -186,7 +186,7 @@ public class ProductDaoJDBC implements ProductDao {
 
     @Override
     public List<Product> getBy(ProductCategory productCategory) throws SQLException {
-        Connection conn = connection.getConnection();
+        Connection conn = dbConnection.getConnection();
         assert conn != null;
 
         PreparedStatement stmt = conn.prepareStatement(

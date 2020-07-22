@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrderDaoMem implements OrderDao {
-    private List<Order> data = new ArrayList<>();
+    private final List<Order> data = new ArrayList<>();
     private static OrderDaoMem instance = null;
 
     private OrderDaoMem() {}
