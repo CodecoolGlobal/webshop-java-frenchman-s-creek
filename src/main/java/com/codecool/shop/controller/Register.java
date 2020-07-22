@@ -23,24 +23,8 @@ public class Register extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ProductDao productDataStore = ProductDaoMem.getInstance();
-        ProductCategoryDao productCategoryDataStore = ProductCategoryDaoMem.getInstance();
-
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
-
-        try {
-            context.setVariable("category", productCategoryDataStore.find(1));
-            context.setVariable("products", productDataStore.getBy(productCategoryDataStore.find(1)));
-        } catch (SQLException e) {
-            context.setVariable("dbError", "Invalid database operation!");
-        }
-
-        // // Alternative setting of the template context
-        // Map<String, Object> params = new HashMap<>();
-        // params.put("category", productCategoryDataStore.find(1));
-        // params.put("products", productDataStore.getBy(productCategoryDataStore.find(1)));
-        // context.setVariables(params);
         engine.process("product/registration.html", context, resp.getWriter());
     }
 

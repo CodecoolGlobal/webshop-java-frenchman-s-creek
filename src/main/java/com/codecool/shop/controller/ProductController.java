@@ -34,9 +34,7 @@ public class ProductController extends HttpServlet {
         ProductDao productDataStore = ProductDaoJDBC.getInstance();
         ProductCategoryDao productCategoryDataStore = ProductCategoryDaoMem.getInstance();
         SupplierDao supplierDataStore = SupplierDaoMem.getInstance();
-
         OrderDao orderDataStore = OrderDaoMem.getInstance();
-
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
 
@@ -53,13 +51,6 @@ public class ProductController extends HttpServlet {
             System.out.println(e.getMessage());
         }
 
-        // // Alternative setting of the template context:
-        // Map<String, Object> params = new HashMap<>();
-        // params.put("category", productCategoryDataStore.find(1));
-        // params.put("products", productDataStore.getBy(productCategoryDataStore.find(1)));
-        // context.setVariables(params);
-
-       
         engine.process("product/index.html", context, resp.getWriter());
     }
 
@@ -72,9 +63,9 @@ public class ProductController extends HttpServlet {
         ProductCategoryDao productCategoryDataStore = ProductCategoryDaoMem.getInstance();
         OrderDao orderDataStore = OrderDaoMem.getInstance();
         SupplierDao supplierDataStore = SupplierDaoMem.getInstance();
-
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
+
         try {
             context.setVariable("category", productCategoryDataStore.find(1));
             context.setVariable("products", productDataStore.getBy(productCategoryDataStore.find(1)));
@@ -83,8 +74,6 @@ public class ProductController extends HttpServlet {
             System.out.println(e.getMessage());
             context.setVariable("dbError", "Invalid database operation!");
         }
-
-
 
         //get first order
         Order order = orderDataStore.find(1);
@@ -103,28 +92,6 @@ public class ProductController extends HttpServlet {
             context.setVariable("dbError", "Invalid product found in database!");
         }
 
-        //add order to context
-        context.setVariable("order", order);
-
-        // String categoryType = req.getParameter("sort_category");
-        // System.out.println(categoryType);
-        // ProductCategory cat = productCategoryDataStore.findByName(categoryType);
-        // System.out.println(cat);
-        // String supplierType = req.getParameter("sort_supplier");
-        // System.out.println(supplierType);
-        // Supplier sup = supplierDataStore.findByName(supplierType);
-        // System.out.println(sup);
-        // if(categoryType.equals("Tablet")){
-        //     context.setVariable("products", productDataStore.getBy(cat));
-        //     System.out.println(productDataStore.getBy(cat));
-        // }
-        // if(supplierType.equals("Amazon") || supplierType.equals("Lenovo")){
-        //     context.setVariable("products", productDataStore.getBy(sup));
-        //     System.out.println(productDataStore.getBy(sup));
-        // }
-        
-
-        //send context to template
         engine.process("product/index.html", context, resp.getWriter());
     }
 }
