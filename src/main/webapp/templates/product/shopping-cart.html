@@ -68,7 +68,7 @@
                                                    th:attr="data-prod-id=${element.getProduct().getId()}"
                                                    th:value="${element.getQuantity()}">
                                             </div>
-                                        <div class="col-6 col-md-2 price"><span
+                                        <div class="price"><span
                                                 th:text="${element.getProduct().getPrice()} + ' / ' + ${element.getSubtotal()} + ' ' + ${element.getProduct().getDefaultCurrency()}">120 USD / 120 USD</span></div>
                                     </div>
                                 </div>
@@ -85,7 +85,7 @@
                                 <h4><span class="text">Total</span><span class="price"
                                                                          th:text="${order.total()} + ' USD'">360
                                     USD</span></h4><button
-                                    class="btn btn-primary btn-block btn-lg" type="button">Checkout</button></div>
+                                    class="btn btn-primary btn-block btn-lg" type="button"><a href="checkout.html" style="color: white">Checkout</a></button></div>
                         </div>
                     </div>
                 </div>
