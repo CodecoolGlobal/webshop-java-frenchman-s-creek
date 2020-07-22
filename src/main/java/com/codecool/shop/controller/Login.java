@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +28,12 @@ public class Login extends HttpServlet {
 
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
-        context.setVariable("category", productCategoryDataStore.find(1));
-        context.setVariable("products", productDataStore.getBy(productCategoryDataStore.find(1)));
+        try {
+            context.setVariable("category", productCategoryDataStore.find(1));
+            context.setVariable("products", productDataStore.getBy(productCategoryDataStore.find(1)));
+        } catch (SQLException e) {
+            e.getStackTrace();
+        }
         // // Alternative setting of the template context
         // Map<String, Object> params = new HashMap<>();
         // params.put("category", productCategoryDataStore.find(1));

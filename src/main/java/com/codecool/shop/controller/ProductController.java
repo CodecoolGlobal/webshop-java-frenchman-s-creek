@@ -39,11 +39,22 @@ public class ProductController extends HttpServlet {
 
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
+
+
+
         try {
+            System.out.println("---------------------TESTING--------------");
             context.setVariable("category", productCategoryDataStore.find(1));
+            System.out.println("---------------------TESTING 142--------------");
+            List<Product> test = productDataStore.getAll();
+            System.out.println(test);
+            System.out.println("---------------------TESTING 2--------------");
             context.setVariable("products", productDataStore.getAll());
             context.setVariable("suppliers", supplierDataStore.getAll());
-            context.setVariable("order", orderDataStore.find(1));
+            Order order = orderDataStore.find(1);
+            if (order != null) {
+                context.setVariable("orderProductCount", order.getItemsNr());
+            }
         } catch (SQLException e) {
             context.setVariable("dbError", "Invalid database operation!");
         }
@@ -70,9 +81,14 @@ public class ProductController extends HttpServlet {
 
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
-        context.setVariable("category", productCategoryDataStore.find(1));
-        context.setVariable("products", productDataStore.getBy(productCategoryDataStore.find(1)));
-        context.setVariable("suppliers", supplierDataStore.getAll());
+        try {
+            context.setVariable("category", productCategoryDataStore.find(1));
+            context.setVariable("products", productDataStore.getBy(productCategoryDataStore.find(1)));
+            context.setVariable("suppliers", supplierDataStore.getAll());
+        } catch (SQLException e) {
+            context.setVariable("dbError", "Invalid database operation!");
+        }
+
 
 
         //get first order
@@ -81,11 +97,15 @@ public class ProductController extends HttpServlet {
         //get product Id from post
         String productIdString = req.getParameter("productId");
 
-        //get product with posted Id
-        Product product = productDataStore.find(Integer.parseInt(productIdString));
+        try {
+            //get product with posted Id
+            Product product = productDataStore.find(Integer.parseInt(productIdString));
 
-        //add product to order
-        order.add(product);
+            //add product to order
+            order.add(product);
+        } catch (SQLException e) {
+            context.setVariable("dbError", "Invalid product found in database!");
+        }
 
         //add order to context
         context.setVariable("order", order);

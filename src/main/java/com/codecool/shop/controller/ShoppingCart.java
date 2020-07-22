@@ -76,15 +76,21 @@ public class ShoppingCart extends HttpServlet {
         }
         assert json != null;
 
-        String prodIdString = (String) json.get("prodId");
-        Product product = productDataStore.find(Integer.parseInt(prodIdString));
+        try {
+            String prodIdString = (String) json.get("prodId");
+            Product product = productDataStore.find(Integer.parseInt(prodIdString));
 
-        String prodQuantityString = (String) json.get("quantity");
-        int quantity = Integer.parseInt(prodQuantityString);
-        order.remove(product);
-        for (int i = 1; i <= quantity; i++) {
-            order.add(product);
+            String prodQuantityString = (String) json.get("quantity");
+            int quantity = Integer.parseInt(prodQuantityString);
+            order.remove(product);
+            for (int i = 1; i <= quantity; i++) {
+                order.add(product);
+            }
+        } catch (SQLException e) {
+            context.setVariable("dbError", "Invalid database operation!");
         }
+
+
 
         context.setVariable("order", order);
         engine.process("product/shopping-cart.html", context, resp.getWriter());
