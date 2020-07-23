@@ -1,5 +1,7 @@
 package com.codecool.shop.model;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,10 @@ public class Order {
     public void add(Product product) {
         boolean isInCart = false;
         for (LineItem element : lineItemList) {
-            if (element.getProduct().equals(product)) {
+            System.out.println(element.getProduct().getId());
+            System.out.println(product.getId());
+            System.out.println("===========");
+            if (element.getProduct().getId() == product.getId()) {
                 element.setQuantity(element.getQuantity() + 1);
                 isInCart = true;
             }
@@ -36,23 +41,13 @@ public class Order {
         lineItemList.removeIf(element -> element.getProduct().equals(product));
     }
 
-    public float total() {
+    public BigDecimal total() {
         float sum = 0;
         for (LineItem element : lineItemList) {
             sum += element.getSubtotal();
         }
-        return sum;
-    }
-
-    public int getItemsNr() {
-        int sum = 0;
-        for (LineItem element : lineItemList) {
-            sum += element.getQuantity();
-        }
-        return sum;
-    }
-
-    public List<LineItem> getLineItems() {
-        return lineItemList;
+        BigDecimal sumRounded = new BigDecimal(Float.toString(sum));
+        sumRounded = sumRounded.setScale(2, RoundingMode.HALF_UP);
+        return sumRounded;
     }
 }

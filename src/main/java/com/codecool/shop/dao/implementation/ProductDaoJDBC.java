@@ -98,8 +98,8 @@ public class ProductDaoJDBC implements ProductDao {
                         ProductUtil.generateTableColumnSelection(DBTable.PRODUCT) + ", " +
                         ProductUtil.generateTableColumnSelection(DBTable.SUPPLIER) +
                         " FROM products AS p " +
-                        "JOIN categories AS c on p.category_id = c.id " +
-                        "WHERE supplier_id = %d;",
+                        "JOIN suppliers AS s on p.supplier_id = s.id " +
+                        "WHERE category_id = %d;",
                 productCategory.getId()
         );
         ResultSet resultSet = DatabaseManager.execQuery(sql);

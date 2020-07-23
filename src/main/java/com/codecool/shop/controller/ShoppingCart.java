@@ -8,6 +8,7 @@ import com.codecool.shop.dao.implementation.ProductCategoryDaoMem;
 import com.codecool.shop.dao.implementation.ProductDaoJDBC;
 import com.codecool.shop.dao.implementation.ProductDaoMem;
 import com.codecool.shop.config.TemplateEngineUtil;
+import com.codecool.shop.model.LineItem;
 import com.codecool.shop.model.Order;
 import com.codecool.shop.model.Product;
 import org.json.simple.JSONObject;
@@ -31,32 +32,26 @@ import java.util.stream.Collectors;
 public class ShoppingCart extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        OrderDao orderDataStore = OrderDaoMem.getInstance();
-
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
-        context.setVariable("order", orderDataStore.find(1));
 
-        // Get all products from session (shopping cart)
-        HttpSession shoppingCartSession = req.getSession();
-        List<Product> shoppingCartProducts = new ArrayList<>();
-        Enumeration<String> attributes = shoppingCartSession.getAttributeNames();
-        while (attributes.hasMoreElements()) {
-            String attribute = attributes.nextElement();
-            Product product = (Product) shoppingCartSession.getAttribute(attribute);
-            shoppingCartProducts.add(product);
+        // Get all products from shopping cart session
+        try {
+            HttpSession shoppingCartSession = req.getSession();
+            Order order = (Order) shoppingCartSession.getAttribute("order");
+            context.setVariable("order", order);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            context.setVariable("order", null);
         }
-        shoppingCartProducts.forEach((Product prod) -> System.out.println(prod.getName()));
-        context.setVariable("shopping_cart_products", shoppingCartProducts);
+
         engine.process("product/shopping-cart.html", context, resp.getWriter());
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ProductDao productDataStore = ProductDaoJDBC.getInstance();
-        OrderDao orderDataStore = OrderDaoMem.getInstance();
-
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
 
@@ -66,8 +61,9 @@ public class ShoppingCart extends HttpServlet {
             context.setVariable("dbError", "Invalid database operation!");
         }
 
-        //get first order
-        Order order = orderDataStore.find(1);
+
+        HttpSession shoppingCartSession = req.getSession();
+        Order order = (Order) shoppingCartSession.getAttribute("order");
 
         String temp = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
         JSONParser parser = new JSONParser();

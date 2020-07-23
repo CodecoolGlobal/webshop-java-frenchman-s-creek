@@ -31,7 +31,7 @@ public class PaymentPage extends HttpServlet {
         orderDataStore = OrderDaoMem.getInstance();
         engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         context = new WebContext(req, resp, req.getServletContext());
-        context.setVariable("orderProducts", orderDataStore.find(1).getLineItems());
+        context.setVariable("orderProducts", orderDataStore.find(1).getLineItemList());
         context.setVariable("order", orderDataStore.find(1));
         engine.process("product/payment-page.html", context, resp.getWriter());
     }

@@ -5,12 +5,10 @@ import com.codecool.shop.dao.ProductCategoryDao;
 import com.codecool.shop.dao.ProductDao;
 import com.codecool.shop.dao.SupplierDao;
 import com.codecool.shop.dao.implementation.*;
-import com.codecool.shop.model.Product;
-import com.codecool.shop.model.ProductCategory;
-import com.codecool.shop.model.Supplier;
+import com.codecool.shop.model.*;
 import com.codecool.shop.config.TemplateEngineUtil;
-import com.codecool.shop.model.Order;
 import com.codecool.shop.model.Product;
+import lombok.SneakyThrows;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 
@@ -27,73 +25,58 @@ import java.util.Map;
 @WebServlet(urlPatterns = {"/"})
 public class ProductController extends HttpServlet {
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ProductDao productDataStore = ProductDaoJDBC.getInstance();
-        ProductCategoryDao productCategoryDataStore = ProductCategoryDaoMem.getInstance();
-        SupplierDao supplierDataStore = SupplierDaoMem.getInstance();
-        OrderDao orderDataStore = OrderDaoMem.getInstance();
-        TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
-        WebContext context = new WebContext(req, resp, req.getServletContext());
+    private ProductDao productDataStore;
+    private ProductCategoryDao productCategoryDataStore;
+    private SupplierDao supplierDataStore;
+    private TemplateEngine engine;
+    private WebContext context;
 
-        try {
-            context.setVariable("category", productCategoryDataStore.find(1));
-            context.setVariable("products", productDataStore.getAll());
-            context.setVariable("suppliers", supplierDataStore.getAll());
-            Order order = orderDataStore.find(1);
-            if (order != null) {
-                context.setVariable("orderProductCount", order.getItemsNr());
-            }
-        } catch (Exception e) {
-            context.setVariable("dbError", "Invalid database operation!");
-            System.out.println(e.getMessage());
-        }
+    @SneakyThrows
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+        setup(req, resp);
+
+        context.setVariable("category", productCategoryDataStore.find(1));
+        context.setVariable("products", productDataStore.getAll());
+        context.setVariable("suppliers", supplierDataStore.getAll());
 
         engine.process("product/index.html", context, resp.getWriter());
     }
 
-  
-    
-
+    @SneakyThrows
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ProductDao productDataStore = ProductDaoMem.getInstance();
-        ProductCategoryDao productCategoryDataStore = ProductCategoryDaoMem.getInstance();
-        OrderDao orderDataStore = OrderDaoMem.getInstance();
-        SupplierDao supplierDataStore = SupplierDaoMem.getInstance();
-        TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
-        WebContext context = new WebContext(req, resp, req.getServletContext());
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
+        setup(req, resp);
 
-        try {
-            context.setVariable("category", productCategoryDataStore.find(1));
-            context.setVariable("products", productDataStore.getBy(productCategoryDataStore.find(1)));
-            context.setVariable("suppliers", supplierDataStore.getAll());
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            context.setVariable("dbError", "Invalid database operation!");
-        }
-
-        //get first order
-        Order order = orderDataStore.find(1);
+        context.setVariable("category", productCategoryDataStore.find(1));
+        context.setVariable("products", productDataStore.getBy(productCategoryDataStore.find(1)));
+        context.setVariable("suppliers", supplierDataStore.getAll());
 
         //get product Id from post
         String productIdString = req.getParameter("productId");
 
+
+        // get product with posted Id
+        Product product = productDataStore.find(Integer.parseInt(productIdString));
+        //
+        HttpSession shoppingCartSession = req.getSession();
+        Order order = null;
         try {
-            //get product with posted Id
-            Product product = productDataStore.find(Integer.parseInt(productIdString));
-
-            // add product to session
-            HttpSession shoppingCartSession = req.getSession();
-            shoppingCartSession.setAttribute("product_id_" + productIdString, product);
-
-            //add product to order
+            order = (Order) shoppingCartSession.getAttribute("order");
             order.add(product);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            context.setVariable("dbError", "Invalid product found in database!");
+            order = new Order();
+            order.add(product);
         }
-
+        shoppingCartSession.setAttribute("order", order);
         engine.process("product/index.html", context, resp.getWriter());
+    }
+
+    private void setup(HttpServletRequest req, HttpServletResponse resp) {
+        productDataStore = ProductDaoJDBC.getInstance();
+        productCategoryDataStore = ProductCategoryDaoMem.getInstance();
+        supplierDataStore = SupplierDaoMem.getInstance();
+        engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
+        context = new WebContext(req, resp, req.getServletContext());
     }
 }
