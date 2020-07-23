@@ -14,134 +14,58 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDaoJDBC implements ProductDao {
-
-    private final dbConnection connection = dbConnection.getInstance();
     private static ProductDaoJDBC instance = null;
 
-    private ProductDaoJDBC() throws IOException {
-    }
-
-    public static ProductDaoJDBC getInstance() throws IOException {
-        if (instance == null) {
-            instance = new ProductDaoJDBC();
-        }
-        return instance;
+    public static ProductDaoJDBC getInstance() {
+        return instance == null ? new ProductDaoJDBC() : instance;
     }
 
     @Override
     public void add(Product product) throws SQLException {
-        Connection conn = dbConnection.getConnection();
-        assert conn != null;
-
-        PreparedStatement stmt = conn.prepareStatement(
+        String sql = String.format(
                 "INSERT INTO products (supplier_id, category_id, name, description, image, price, currency) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?);"
+                        "VALUES (%d, %d, '%s', '%s', '%s', %.2f, '%s');",
+                product.getSupplier().getId(), product.getProductCategory().getId(), product.getName(), product.getDescription(),
+                product.getImageFileName(), product.getDefaultPrice(), product.getDefaultCurrency() + ""
         );
-        stmt.setInt(1, product.getSupplier().getId());
-        stmt.setInt(2, product.getProductCategory().getId());
-        stmt.setString(3, product.getName());
-        stmt.setString(4, product.getDescription());
-        stmt.setString(5, product.getImageFileName());
-        stmt.setFloat(6, product.getDefaultPrice());
-        stmt.setString(7, product.getDefaultCurrency() + "");
-
-        stmt.executeUpdate();
+        DatabaseManager.execUpdate(sql);
     }
 
     @Override
     public Product find(int id) throws SQLException {
-        Connection conn = dbConnection.getConnection();
-        assert conn != null;
-
-        PreparedStatement stmt = conn.prepareStatement(
-                "SELECT p.*, s.*, c.* " +
-                        "FROM products AS p " +
+        String sql = String.format(
+                "SELECT " +
+                        ProductUtil.generateTableColumnSelection(DBTable.PRODUCT) + ", " +
+                        ProductUtil.generateTableColumnSelection(DBTable.SUPPLIER) + ", " +
+                        ProductUtil.generateTableColumnSelection(DBTable.CATEGORY) +
+                        " FROM products AS p " +
                         "JOIN suppliers AS s ON p.supplier_id = s.id " +
                         "JOIN categories AS c on p.category_id = c.id " +
-                        "WHERE p.id = ?;"
-        );
-        stmt.setInt(1, id);
-
-        ResultSet resultSet = stmt.executeQuery();
-
-        if (resultSet.next()) {
-            ProductCategory productCategory = new ProductCategory(
-                    resultSet.getString("c.name"),
-                    resultSet.getString("department"),
-                    resultSet.getString("c.description")
-            );
-            productCategory.setId(resultSet.getInt("c.id"));
-            Supplier supplier = new Supplier(
-                    resultSet.getString("s.name"),
-                    resultSet.getString("s.description")
-            );
-            supplier.setId(resultSet.getInt("s.id"));
-            Product product = new Product(
-                    resultSet.getString("p.name"),
-                    resultSet.getFloat("price"),
-                    resultSet.getString("currency"),
-                    resultSet.getNString("p.description"),
-                    resultSet.getString("image"),
-                    productCategory,
-                    supplier
-            );
-            product.setId(resultSet.getInt("p.id"));
-            return product;
-        }
-        return null;
+                        "WHERE p.id=%d;", id);
+        ResultSet resultSet = DatabaseManager.execQuery(sql);
+        return resultSet.next() ? ProductUtil.getProductFromResultSet(resultSet) : null;
     }
 
     @Override
     public void remove(int id) throws SQLException {
-        Connection conn = dbConnection.getConnection();
-        assert conn != null;
-
-        PreparedStatement stmt = conn.prepareStatement(
-                "DELETE FROM products WHERE id = ?;"
-        );
-        stmt.setInt(1, id);
-
-        stmt.executeUpdate();
+        String sql = String.format("DELETE FROM products WHERE id=%d", id);
+        DatabaseManager.execUpdate(sql);
     }
 
     @Override
     public List<Product> getAll() throws SQLException {
-        Connection conn = connection.getConnection();
-        assert conn != null;
-
-        PreparedStatement stmt = conn.prepareStatement(
-                "SELECT p.id AS prod_id, p.name AS prod_name, p.description prod_desc, image, price, currency, " +
-                        "s.id AS sup_id, s.name AS sup_name, s.description AS sup_desc, " +
-                        "c.id AS cat_id, c.name AS cat_name, department, c.description AS cat_desc " +
-                        "FROM products AS p " +
-                        "JOIN suppliers AS s ON p.supplier_id = s.id " +
-                        "JOIN categories AS c on p.category_id = c.id;"
-        );
-        ResultSet resultSet = stmt.executeQuery();
+        String sql = "SELECT " +
+                ProductUtil.generateTableColumnSelection(DBTable.PRODUCT) + ", " +
+                ProductUtil.generateTableColumnSelection(DBTable.SUPPLIER) + ", " +
+                ProductUtil.generateTableColumnSelection(DBTable.CATEGORY) +
+                " FROM products AS p " +
+                "JOIN suppliers AS s ON p.supplier_id = s.id " +
+                "JOIN categories AS c on p.category_id = c.id;";
+        ResultSet resultSet = DatabaseManager.execQuery(sql);
 
         List<Product> data = new ArrayList<>();
         while (resultSet.next()) {
-            ProductCategory productCategory = new ProductCategory(
-                    resultSet.getString("cat_name"),
-                    resultSet.getString("department"),
-                    resultSet.getString("cat_desc")
-            );
-            productCategory.setId(resultSet.getInt("cat_id"));
-            Supplier supplier = new Supplier(
-                    resultSet.getString("sup_name"),
-                    resultSet.getString("sup_desc")
-            );
-            supplier.setId(resultSet.getInt("sup_id"));
-            Product product = new Product(
-                    resultSet.getString("prod_name"),
-                    resultSet.getFloat("price"),
-                    resultSet.getString("currency"),
-                    resultSet.getString("prod_desc"),
-                    resultSet.getString("image"),
-                    productCategory,
-                    supplier
-            );
-            product.setId(resultSet.getInt("prod_id"));
+            Product product = ProductUtil.getProductFromResultSet(resultSet);
             data.add(product);
         }
         return data;
@@ -149,36 +73,19 @@ public class ProductDaoJDBC implements ProductDao {
 
     @Override
     public List<Product> getBy(Supplier supplier) throws SQLException {
-        Connection conn = dbConnection.getConnection();
-        assert conn != null;
-
-        PreparedStatement stmt = conn.prepareStatement(
-                "SELECT p.*, c.* " +
-                        "FROM products AS p " +
+        String sql = String.format(
+                "SELECT " +
+                        ProductUtil.generateTableColumnSelection(DBTable.PRODUCT) + ", " +
+                        ProductUtil.generateTableColumnSelection(DBTable.CATEGORY) +
+                        " FROM products AS p " +
                         "JOIN categories AS c on p.category_id = c.id " +
-                        "WHERE supplier_id = ?;"
+                        "WHERE supplier_id = %d;",
+                supplier.getId()
         );
-        stmt.setInt(1, supplier.getId());
-
-        ResultSet resultSet = stmt.executeQuery();
+        ResultSet resultSet = DatabaseManager.execQuery(sql);
         List<Product> productList = new ArrayList<>();
         while (resultSet.next()) {
-            ProductCategory productCategory = new ProductCategory(
-                    resultSet.getString("c.name"),
-                    resultSet.getString("department"),
-                    resultSet.getString("c.description")
-            );
-            productCategory.setId(resultSet.getInt("c.id"));
-            Product product = new Product(
-                    resultSet.getString("p.name"),
-                    resultSet.getFloat("price"),
-                    resultSet.getString("currency"),
-                    resultSet.getNString("p.description"),
-                    resultSet.getString("image"),
-                    productCategory,
-                    supplier
-            );
-            product.setId(resultSet.getInt("p.id"));
+            Product product = ProductUtil.getProductFromResultSet(resultSet, supplier);
             productList.add(product);
         }
         return productList;
@@ -186,37 +93,23 @@ public class ProductDaoJDBC implements ProductDao {
 
     @Override
     public List<Product> getBy(ProductCategory productCategory) throws SQLException {
-        Connection conn = dbConnection.getConnection();
-        assert conn != null;
-
-        PreparedStatement stmt = conn.prepareStatement(
-                "SELECT p.*, s.* " +
-                        "FROM products AS p " +
-                        "JOIN suppliers AS s on p.supplier_id = s.id " +
-                        "WHERE category_id = ?;"
+        String sql = String.format(
+                "SELECT " +
+                        ProductUtil.generateTableColumnSelection(DBTable.PRODUCT) + ", " +
+                        ProductUtil.generateTableColumnSelection(DBTable.SUPPLIER) +
+                        " FROM products AS p " +
+                        "JOIN categories AS c on p.category_id = c.id " +
+                        "WHERE supplier_id = %d;",
+                productCategory.getId()
         );
-        stmt.setInt(1, productCategory.getId());
-
-        ResultSet resultSet = stmt.executeQuery();
+        ResultSet resultSet = DatabaseManager.execQuery(sql);
         List<Product> productList = new ArrayList<>();
         while (resultSet.next()) {
-            Supplier supplier = new Supplier(
-                    resultSet.getString("s.name"),
-                    resultSet.getString("s.description")
-            );
-            supplier.setId(resultSet.getInt("s.id"));
-            Product product = new Product(
-                    resultSet.getString("p.name"),
-                    resultSet.getFloat("price"),
-                    resultSet.getString("currency"),
-                    resultSet.getNString("p.description"),
-                    resultSet.getString("image"),
-                    productCategory,
-                    supplier
-            );
-            product.setId(resultSet.getInt("p.id"));
+            Product product = ProductUtil.getProductFromResultSet(resultSet, productCategory);
             productList.add(product);
         }
         return productList;
     }
+
+
 }
