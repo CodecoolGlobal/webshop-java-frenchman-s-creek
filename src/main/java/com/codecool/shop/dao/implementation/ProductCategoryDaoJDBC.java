@@ -12,16 +12,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductCategoryJDBC implements ProductCategoryDao {
+public class ProductCategoryDaoJDBC implements ProductCategoryDao {
     private dbConnection connection = dbConnection.getInstance();
-    private static ProductCategoryJDBC instance = null;
+    private static ProductCategoryDaoJDBC instance = null;
 
-    private ProductCategoryJDBC() throws IOException {
+    private ProductCategoryDaoJDBC() throws IOException {
     }
 
-    public static ProductCategoryJDBC getInstance() throws IOException {
+    public static ProductCategoryDaoJDBC getInstance() throws IOException {
         if (instance == null) {
-            instance = new ProductCategoryJDBC();
+            instance = new ProductCategoryDaoJDBC();
         }
         return instance;
     }

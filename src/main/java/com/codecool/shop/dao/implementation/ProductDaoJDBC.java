@@ -54,7 +54,9 @@ public class ProductDaoJDBC implements ProductDao {
         assert conn != null;
 
         PreparedStatement stmt = conn.prepareStatement(
-                "SELECT p.*, s.*, c.* " +
+                "SELECT p.id AS prod_id, p.name AS prod_name, p.description prod_desc, image, price, currency, " +
+                        "s.id AS sup_id, s.name AS sup_name, s.description AS sup_desc, " +
+                        "c.id AS cat_id, c.name AS cat_name, department, c.description AS cat_desc " +
                         "FROM products AS p " +
                         "JOIN suppliers AS s ON p.supplier_id = s.id " +
                         "JOIN categories AS c on p.category_id = c.id " +
@@ -66,26 +68,26 @@ public class ProductDaoJDBC implements ProductDao {
 
         if (resultSet.next()) {
             ProductCategory productCategory = new ProductCategory(
-                    resultSet.getString("c.name"),
+                    resultSet.getString("cat_name"),
                     resultSet.getString("department"),
-                    resultSet.getString("c.description")
+                    resultSet.getString("cat_desc")
             );
-            productCategory.setId(resultSet.getInt("c.id"));
+            productCategory.setId(resultSet.getInt("cat_id"));
             Supplier supplier = new Supplier(
-                    resultSet.getString("s.name"),
-                    resultSet.getString("s.description")
+                    resultSet.getString("sup_name"),
+                    resultSet.getString("sup_desc")
             );
-            supplier.setId(resultSet.getInt("s.id"));
+            supplier.setId(resultSet.getInt("sup_id"));
             Product product = new Product(
-                    resultSet.getString("p.name"),
+                    resultSet.getString("prod_name"),
                     resultSet.getFloat("price"),
                     resultSet.getString("currency"),
-                    resultSet.getNString("p.description"),
+                    resultSet.getString("prod_desc"),
                     resultSet.getString("image"),
                     productCategory,
                     supplier
             );
-            product.setId(resultSet.getInt("p.id"));
+            product.setId(resultSet.getInt("prod_id"));
             return product;
         }
         return null;
@@ -153,7 +155,8 @@ public class ProductDaoJDBC implements ProductDao {
         assert conn != null;
 
         PreparedStatement stmt = conn.prepareStatement(
-                "SELECT p.*, c.* " +
+                "SELECT p.id AS prod_id, p.name AS prod_name, p.description prod_desc, image, price, currency, " +
+                        "c.id AS cat_id, c.name AS cat_name, department, c.description AS cat_desc " +
                         "FROM products AS p " +
                         "JOIN categories AS c on p.category_id = c.id " +
                         "WHERE supplier_id = ?;"
@@ -164,21 +167,21 @@ public class ProductDaoJDBC implements ProductDao {
         List<Product> productList = new ArrayList<>();
         while (resultSet.next()) {
             ProductCategory productCategory = new ProductCategory(
-                    resultSet.getString("c.name"),
+                    resultSet.getString("cat_name"),
                     resultSet.getString("department"),
-                    resultSet.getString("c.description")
+                    resultSet.getString("cat_desc")
             );
-            productCategory.setId(resultSet.getInt("c.id"));
+            productCategory.setId(resultSet.getInt("cat_id"));
             Product product = new Product(
-                    resultSet.getString("p.name"),
+                    resultSet.getString("prod_name"),
                     resultSet.getFloat("price"),
                     resultSet.getString("currency"),
-                    resultSet.getNString("p.description"),
+                    resultSet.getString("prod_desc"),
                     resultSet.getString("image"),
                     productCategory,
                     supplier
             );
-            product.setId(resultSet.getInt("p.id"));
+            product.setId(resultSet.getInt("prod_id"));
             productList.add(product);
         }
         return productList;
@@ -190,7 +193,8 @@ public class ProductDaoJDBC implements ProductDao {
         assert conn != null;
 
         PreparedStatement stmt = conn.prepareStatement(
-                "SELECT p.*, s.* " +
+                "SELECT p.id AS prod_id, p.name AS prod_name, p.description prod_desc, image, price, currency, " +
+                        "s.id AS sup_id, s.name AS sup_name, s.description AS sup_desc " +
                         "FROM products AS p " +
                         "JOIN suppliers AS s on p.supplier_id = s.id " +
                         "WHERE category_id = ?;"
@@ -201,20 +205,20 @@ public class ProductDaoJDBC implements ProductDao {
         List<Product> productList = new ArrayList<>();
         while (resultSet.next()) {
             Supplier supplier = new Supplier(
-                    resultSet.getString("s.name"),
-                    resultSet.getString("s.description")
+                    resultSet.getString("sup_name"),
+                    resultSet.getString("sup_desc")
             );
-            supplier.setId(resultSet.getInt("s.id"));
+            supplier.setId(resultSet.getInt("sup_id"));
             Product product = new Product(
-                    resultSet.getString("p.name"),
+                    resultSet.getString("prod_name"),
                     resultSet.getFloat("price"),
                     resultSet.getString("currency"),
-                    resultSet.getNString("p.description"),
+                    resultSet.getString("prod_desc"),
                     resultSet.getString("image"),
                     productCategory,
                     supplier
             );
-            product.setId(resultSet.getInt("p.id"));
+            product.setId(resultSet.getInt("prod_id"));
             productList.add(product);
         }
         return productList;

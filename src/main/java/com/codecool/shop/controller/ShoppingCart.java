@@ -3,10 +3,8 @@ package com.codecool.shop.controller;
 import com.codecool.shop.dao.OrderDao;
 import com.codecool.shop.dao.ProductCategoryDao;
 import com.codecool.shop.dao.ProductDao;
-import com.codecool.shop.dao.implementation.OrderDaoMem;
-import com.codecool.shop.dao.implementation.ProductCategoryDaoMem;
-import com.codecool.shop.dao.implementation.ProductDaoJDBC;
-import com.codecool.shop.dao.implementation.ProductDaoMem;
+import com.codecool.shop.dao.SupplierDao;
+import com.codecool.shop.dao.implementation.*;
 import com.codecool.shop.config.TemplateEngineUtil;
 import com.codecool.shop.model.Order;
 import com.codecool.shop.model.Product;
@@ -32,39 +30,58 @@ public class ShoppingCart extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //ProductDao productDataStore = ProductDaoMem.getInstance();
-        //ProductCategoryDao productCategoryDataStore = ProductCategoryDaoMem.getInstance();
-        OrderDao orderDataStore = OrderDaoMem.getInstance();
+        ProductDao productDataStore = ProductDaoJDBC.getInstance();
+        ProductCategoryDao productCategoryDataStore = ProductCategoryDaoJDBC.getInstance();
+        SupplierDao supplierDataStore = SupplierDaoJDBC.getInstance();
+        OrderDao orderDataStore = OrderDaoJDBC.getInstance();
 
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
 
-        //context.setVariable("category", productCategoryDataStore.find(1));
-        //context.setVariable("products", productDataStore.getBy(productCategoryDataStore.find(1)));
-        context.setVariable("order", orderDataStore.find(1));
+        try {
+            context.setVariable("category", productCategoryDataStore.find(1));
+            context.setVariable("products", productDataStore.getBy(productCategoryDataStore.find(1)));
+            context.setVariable("order", orderDataStore.find(1, (ProductCategoryDaoJDBC) productCategoryDataStore,
+                    (SupplierDaoJDBC) supplierDataStore));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
         engine.process("product/shopping-cart.html", context, resp.getWriter());
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ProductDao productDataStore = ProductDaoJDBC.getInstance();
-        ProductCategoryDao productCategoryDataStore = ProductCategoryDaoMem.getInstance();
-        OrderDao orderDataStore = OrderDaoMem.getInstance();
+        ProductCategoryDao productCategoryDataStore = ProductCategoryDaoJDBC.getInstance();
+        SupplierDao supplierDataStore = SupplierDaoJDBC.getInstance();
+        OrderDao orderDataStore = OrderDaoJDBC.getInstance();
 
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
 
         try {
-            //context.setVariable("category", productCategoryDataStore.find(1));
+            context.setVariable("category", productCategoryDataStore.find(1));
             context.setVariable("products", productDataStore.getAll());
         } catch (SQLException e) {
             context.setVariable("dbError", "Invalid database operation!");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
 
 
 
         //get first order
-        Order order = orderDataStore.find(1);
+        Order order = null;
+        try {
+            order = orderDataStore.find(1, (ProductCategoryDaoJDBC) productCategoryDataStore,
+                    (SupplierDaoJDBC) supplierDataStore);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        };
 
         String temp = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
         JSONParser parser = new JSONParser();

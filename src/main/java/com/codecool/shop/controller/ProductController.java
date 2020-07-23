@@ -32,10 +32,10 @@ public class ProductController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         ProductDao productDataStore = ProductDaoJDBC.getInstance();
-        ProductCategoryDao productCategoryDataStore = ProductCategoryDaoMem.getInstance();
-        SupplierDao supplierDataStore = SupplierDaoMem.getInstance();
+        ProductCategoryDao productCategoryDataStore = ProductCategoryDaoJDBC.getInstance();
+        SupplierDao supplierDataStore = SupplierDaoJDBC.getInstance();
 
-        OrderDao orderDataStore = OrderDaoMem.getInstance();
+        OrderDao orderDataStore = OrderDaoJDBC.getInstance();
 
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
@@ -44,9 +44,14 @@ public class ProductController extends HttpServlet {
             context.setVariable("category", productCategoryDataStore.find(1));
             context.setVariable("products", productDataStore.getAll());
             context.setVariable("suppliers", supplierDataStore.getAll());
-            Order order = orderDataStore.find(1);
-            if (order != null) {
+
+            Order order = orderDataStore.find(1, (ProductCategoryDaoJDBC) productCategoryDataStore,
+                    (SupplierDaoJDBC) supplierDataStore);
+
+            if (order.getLineItemList().size() > 0) {
                 context.setVariable("orderProductCount", order.getItemsNr());
+            } else {
+                context.setVariable("orderProductCount", 0);
             }
         } catch (Exception e) {
             context.setVariable("dbError", "Invalid database operation!");
@@ -63,15 +68,12 @@ public class ProductController extends HttpServlet {
         engine.process("product/index.html", context, resp.getWriter());
     }
 
-  
-    
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ProductDao productDataStore = ProductDaoMem.getInstance();
-        ProductCategoryDao productCategoryDataStore = ProductCategoryDaoMem.getInstance();
-        OrderDao orderDataStore = OrderDaoMem.getInstance();
-        SupplierDao supplierDataStore = SupplierDaoMem.getInstance();
+        ProductDao productDataStore = ProductDaoJDBC.getInstance();
+        ProductCategoryDao productCategoryDataStore = ProductCategoryDaoJDBC.getInstance();
+        OrderDao orderDataStore = OrderDaoJDBC.getInstance();
+        SupplierDao supplierDataStore = SupplierDaoJDBC.getInstance();
 
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
@@ -84,27 +86,40 @@ public class ProductController extends HttpServlet {
             context.setVariable("dbError", "Invalid database operation!");
         }
 
-
-
-        //get first order
-        Order order = orderDataStore.find(1);
-
-        //get product Id from post
-        String productIdString = req.getParameter("productId");
-
         try {
-            //get product with posted Id
+            Order order = null;
+            if (!orderDataStore.orderExists(1)) {
+                order = orderDataStore.addNewOrderRecord();
+            } else {
+                order = orderDataStore.find(1, (ProductCategoryDaoJDBC) productCategoryDataStore,
+                        (SupplierDaoJDBC) supplierDataStore);
+            }
+
+            //get product Id from post  ??????????????????????????
+            String productIdString = req.getParameter("productId");
+
+            //get product with posted Id  ????????????????????????????
             Product product = productDataStore.find(Integer.parseInt(productIdString));
 
             //add product to order
+            orderDataStore.add(order, product);
             order.add(product);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
             context.setVariable("dbError", "Invalid product found in database!");
         }
 
+
+//        try {
+//            order = orderDataStore.find(1, (ProductCategoryDaoJDBC) productCategoryDataStore,
+//                    (SupplierDaoJDBC) supplierDataStore);
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//            e.printStackTrace();
+//        }
+
         //add order to context
-        context.setVariable("order", order);
+//        context.setVariable("order", order);
 
         // String categoryType = req.getParameter("sort_category");
         // System.out.println(categoryType);

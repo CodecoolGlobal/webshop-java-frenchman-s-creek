@@ -19,6 +19,10 @@ public class Order {
         return lineItemList;
     }
 
+    public void setLineItemList(List<LineItem> lineItemList) {
+        this.lineItemList = lineItemList;
+    }
+
     public void add(Product product) {
         boolean isInCart = false;
         for (LineItem element : lineItemList) {
@@ -48,6 +52,7 @@ public class Order {
         int sum = 0;
         for (LineItem element : lineItemList) {
             sum += element.getQuantity();
+            System.out.println(sum);
         }
         return sum;
     }

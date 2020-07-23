@@ -1,7 +1,11 @@
 package com.codecool.shop.controller;
 
 import com.codecool.shop.dao.OrderDao;
-import com.codecool.shop.dao.implementation.OrderDaoMem;
+import com.codecool.shop.dao.ProductCategoryDao;
+import com.codecool.shop.dao.SupplierDao;
+import com.codecool.shop.dao.implementation.OrderDaoJDBC;
+import com.codecool.shop.dao.implementation.ProductCategoryDaoJDBC;
+import com.codecool.shop.dao.implementation.SupplierDaoJDBC;
 import com.codecool.shop.email.Mailer;
 import com.codecool.shop.payment.CreditCard;
 import com.codecool.shop.payment.StripePayment;
@@ -17,6 +21,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet(urlPatterns = {"/payment-page.html"})
 public class PaymentPage extends HttpServlet {
@@ -25,14 +30,26 @@ public class PaymentPage extends HttpServlet {
     TemplateEngine engine;
     WebContext context;
     OrderDao orderDataStore;
+    ProductCategoryDao productCategoryDataStore = ProductCategoryDaoJDBC.getInstance();
+    SupplierDao supplierDataStore = SupplierDaoJDBC.getInstance();
+
+    public PaymentPage() throws IOException {
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        orderDataStore = OrderDaoMem.getInstance();
+        orderDataStore = OrderDaoJDBC.getInstance();
         engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         context = new WebContext(req, resp, req.getServletContext());
-        context.setVariable("orderProducts", orderDataStore.find(1).getLineItems());
-        context.setVariable("order", orderDataStore.find(1));
+
+        try {
+            context.setVariable("orderProducts", orderDataStore.find(1, (ProductCategoryDaoJDBC) productCategoryDataStore,
+                    (SupplierDaoJDBC) supplierDataStore).getLineItems());
+            context.setVariable("order", orderDataStore.find(1, (ProductCategoryDaoJDBC) productCategoryDataStore,
+                    (SupplierDaoJDBC) supplierDataStore));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         engine.process("product/payment-page.html", context, resp.getWriter());
     }
 
@@ -50,7 +67,12 @@ public class PaymentPage extends HttpServlet {
 
         if (success) {
             resp.sendRedirect("order-confirmation");
-            OrderToJSON.convert(orderDataStore.find(1));
+            try {
+                OrderToJSON.convert(orderDataStore.find(1, (ProductCategoryDaoJDBC) productCategoryDataStore,
+                        (SupplierDaoJDBC) supplierDataStore));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             (new Mailer("pythonsendmailtest75@gmail.com", "lpiiamlxlfsnzwxs", "bogdan.gheboianu.2013@gmail.com", "[CodeCoolShop] Order Confirmation", "This is my test message!")).start();
         } else {
             context.setVariable("payment-error", true);
