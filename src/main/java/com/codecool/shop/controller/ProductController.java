@@ -36,9 +36,19 @@ public class ProductController extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         setup(req, resp);
 
+        int orderProductCount = 0;
+        Order order = null;
+        HttpSession shoppingCartSession = req.getSession();
+        try {
+            order = (Order) shoppingCartSession.getAttribute("order");
+            orderProductCount = order.getLineItemList().size();
+
+        } catch (Exception ignored) {}
+
         context.setVariable("category", productCategoryDataStore.find(1));
         context.setVariable("products", productDataStore.getAll());
         context.setVariable("suppliers", supplierDataStore.getAll());
+        context.setVariable("orderProductCount", orderProductCount);
 
         engine.process("product/index.html", context, resp.getWriter());
     }
@@ -58,7 +68,7 @@ public class ProductController extends HttpServlet {
 
         // get product with posted Id
         Product product = productDataStore.find(Integer.parseInt(productIdString));
-        //
+
         HttpSession shoppingCartSession = req.getSession();
         Order order = null;
         try {
@@ -68,6 +78,7 @@ public class ProductController extends HttpServlet {
             order = new Order();
             order.add(product);
         }
+        context.setVariable("orderProductCount", order.getLineItemList().size());
         shoppingCartSession.setAttribute("order", order);
         engine.process("product/index.html", context, resp.getWriter());
     }

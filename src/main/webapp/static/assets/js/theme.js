@@ -40,5 +40,4 @@ for (let quantityInput of quantityInputs) {
     quantityInput.addEventListener("click", updateQuantity);
 }
 
-// console.log("AICI");
 

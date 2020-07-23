@@ -24,9 +24,6 @@ public class Order {
     public void add(Product product) {
         boolean isInCart = false;
         for (LineItem element : lineItemList) {
-            System.out.println(element.getProduct().getId());
-            System.out.println(product.getId());
-            System.out.println("===========");
             if (element.getProduct().getId() == product.getId()) {
                 element.setQuantity(element.getQuantity() + 1);
                 isInCart = true;
