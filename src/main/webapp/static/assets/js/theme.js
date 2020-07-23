@@ -13,7 +13,7 @@ if ($('.clean-product').length > 0) {
 
 // STUDENT CODE
 const url_api = 'http://localhost:8888/';
-const url_shopping_cart = url_api + 'shopping-cart.html';
+const url_shopping_cart = url_api + 'shopping-cart';
 
 async function updateQuantity() {
     let prodQuantity = this.value;

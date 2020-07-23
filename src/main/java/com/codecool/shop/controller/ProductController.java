@@ -16,9 +16,7 @@ import org.thymeleaf.context.WebContext;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -84,6 +82,10 @@ public class ProductController extends HttpServlet {
         try {
             //get product with posted Id
             Product product = productDataStore.find(Integer.parseInt(productIdString));
+
+            // add product to session
+            HttpSession shoppingCartSession = req.getSession();
+            shoppingCartSession.setAttribute("product_id_" + productIdString, product);
 
             //add product to order
             order.add(product);

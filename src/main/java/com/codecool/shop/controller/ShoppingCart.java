@@ -21,10 +21,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @WebServlet(urlPatterns = {"/shopping-cart"})
@@ -37,6 +37,18 @@ public class ShoppingCart extends HttpServlet {
         TemplateEngine engine = TemplateEngineUtil.getTemplateEngine(req.getServletContext());
         WebContext context = new WebContext(req, resp, req.getServletContext());
         context.setVariable("order", orderDataStore.find(1));
+
+        // Get all products from session (shopping cart)
+        HttpSession shoppingCartSession = req.getSession();
+        List<Product> shoppingCartProducts = new ArrayList<>();
+        Enumeration<String> attributes = shoppingCartSession.getAttributeNames();
+        while (attributes.hasMoreElements()) {
+            String attribute = attributes.nextElement();
+            Product product = (Product) shoppingCartSession.getAttribute(attribute);
+            shoppingCartProducts.add(product);
+        }
+        shoppingCartProducts.forEach((Product prod) -> System.out.println(prod.getName()));
+        context.setVariable("shopping_cart_products", shoppingCartProducts);
         engine.process("product/shopping-cart.html", context, resp.getWriter());
     }
 
